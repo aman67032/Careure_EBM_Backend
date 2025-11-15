@@ -10,8 +10,44 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Middleware
+// CORS configuration - allow multiple origins
+const allowedOrigins = [
+  'http://localhost:3000',
+  'https://care-sure-frontend-ebm.vercel.app',
+  process.env.FRONTEND_URL
+].filter(Boolean); // Remove undefined values
+
+// Add any additional frontend URLs from environment (comma-separated)
+if (process.env.FRONTEND_URLS) {
+  allowedOrigins.push(...process.env.FRONTEND_URLS.split(',').map(url => url.trim()));
+}
+
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    // Check if origin matches any allowed origin
+    const isAllowed = allowedOrigins.some(allowed => {
+      // Exact match
+      if (origin === allowed) return true;
+      // Check if origin is a Vercel preview URL (starts with allowed domain)
+      if (allowed.includes('vercel.app') && origin.includes('vercel.app')) return true;
+      return false;
+    });
+    
+    if (isAllowed) {
+      callback(null, true);
+    } else {
+      // For development, allow all origins
+      if (process.env.NODE_ENV !== 'production') {
+        callback(null, true);
+      } else {
+        console.warn(`CORS blocked origin: ${origin}`);
+        callback(new Error('Not allowed by CORS'));
+      }
+    }
+  },
   credentials: true
 }));
 app.use(express.json());

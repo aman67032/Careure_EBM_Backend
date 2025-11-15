@@ -7,6 +7,24 @@ const { validateRegister, validateLogin } = require('../middleware/validate');
 
 const router = express.Router();
 
+// Register Caregiver - GET handler for helpful error message
+router.get('/register', (req, res) => {
+  res.status(405).json({
+    error: 'Method Not Allowed',
+    message: 'This endpoint requires a POST request. Use POST /api/auth/register with name, email, password, and phone in the request body.',
+    example: {
+      method: 'POST',
+      url: '/api/auth/register',
+      body: {
+        name: 'John Doe',
+        email: 'user@example.com',
+        password: 'securepassword',
+        phone: '1234567890'
+      }
+    }
+  });
+});
+
 // Register Caregiver
 router.post('/register', validateRegister, async (req, res) => {
   try {
@@ -66,6 +84,22 @@ router.post('/register', validateRegister, async (req, res) => {
     console.error('Registration error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
+});
+
+// Login Caregiver - GET handler for helpful error message
+router.get('/login', (req, res) => {
+  res.status(405).json({
+    error: 'Method Not Allowed',
+    message: 'This endpoint requires a POST request. Use POST /api/auth/login with email and password in the request body.',
+    example: {
+      method: 'POST',
+      url: '/api/auth/login',
+      body: {
+        email: 'user@example.com',
+        password: 'yourpassword'
+      }
+    }
+  });
 });
 
 // Login Caregiver

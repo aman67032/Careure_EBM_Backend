@@ -37,6 +37,24 @@ app.use('/api/documents', require('./routes/documents'));
 app.use('/api/admin', require('./routes/admin'));
 app.use('/api/patient', require('./routes/patient'));
 
+// Root route
+app.get('/', (req, res) => {
+  res.json({
+    message: 'CareSure Backend API',
+    version: '1.0.0',
+    status: 'running',
+    endpoints: {
+      health: '/api/health',
+      auth: '/api/auth',
+      patients: '/api/patients',
+      medications: '/api/medications',
+      devices: '/api/devices',
+      admin: '/api/admin',
+    },
+    documentation: 'See API documentation for details'
+  });
+});
+
 // Health check
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', message: 'CareSure API is running' });
